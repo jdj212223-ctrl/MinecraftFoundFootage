@@ -10,11 +10,14 @@ import com.sp.world.events.level1.Level1Blackout;
 import com.sp.world.generation.chunk_generator.Level1ChunkGenerator;
 import com.sp.world.levels.BackroomsLevel;
 import com.sp.world.levels.BackroomsLevelWithLights;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +49,26 @@ public class Level1BackroomsLevel extends BackroomsLevel implements BackroomsLev
             }
 
             return playerList;
-        }, this.getLevelId() + "-> level2");
+        }, this.getLevelId() + "->" + BackroomsLevels.LEVEL2_BACKROOMS_LEVEL.getLevelId());
+
+        this.registerTransition((world, playerComponent, from) -> {
+            List<LevelTransition> playerList = new ArrayList<>();
+            BlockState state = world.getBlockState(playerComponent.player.getBlockPos().subtract(new Vec3i(0, 2, 0)));
+
+            if (
+                    from instanceof Level1BackroomsLevel &&
+                    playerComponent.player.getPos().getY() >= 26 &&
+                    playerComponent.player.isOnGround() &&
+                    state.isOf(Blocks.BLUE_WOOL)
+            ) {
+                for (PlayerEntity player : playerComponent.player.getWorld().getPlayers()) {
+                    PlayerComponent otherPlayerComponent = InitializeComponents.PLAYER.get(player);
+                    playerList.add(getLevel324Transition(otherPlayerComponent));
+                }
+            }
+
+            return playerList;
+        }, this.getLevelId() + "->" + BackroomsLevels.LEVEL324_BACKROOMS_LEVEL.getLevelId());
     }
 
 
@@ -68,7 +90,30 @@ public class Level1BackroomsLevel extends BackroomsLevel implements BackroomsLev
                         playerComponent.player.getChunkPos()),
                         this,
                         BackroomsLevels.LEVEL2_BACKROOMS_LEVEL),
-                (teleport, tick) -> {}); // Cancel
+                (teleport, tick) -> {}
+        ); // Cancel
+    }
+
+    private LevelTransition getLevel324Transition(PlayerComponent playerComponent) {
+        return new LevelTransition(
+                30,
+                (teleport, tick) -> {
+                    if (tick == 30) {
+                        if (!playerComponent.player.getWorld().isClient()) {
+                            if(!playerComponent.isTeleporting()) {
+                                playerComponent.player.setYaw(playerComponent.player.getYaw() - 90);
+                                SPBRevamped.sendLevelTransitionLightsOutPacket((ServerPlayerEntity) playerComponent.player, 80);
+                            }
+                        }
+                    }
+                }, // Tick
+                new CrossDimensionTeleport(
+                        playerComponent,
+                        new Vec3d(53, 65, 21),
+                        this,
+                        BackroomsLevels.LEVEL324_BACKROOMS_LEVEL),
+                (teleport, tick) -> {}
+        ); // Cancel
     }
 
     private Vec3d calculateLevel2TeleportCoords(PlayerEntity player, ChunkPos chunkPos) {

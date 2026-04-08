@@ -80,7 +80,7 @@ public final class PoolroomsChunkGenerator extends BackroomsChunkGenerator {
                 poolroomsMazeGenerator.setup(world, true, false, false);
             }
 
-        } else if (((float)chunk.getPos().x) % SPBRevamped.finalMazeSize == 0 && ((float)chunk.getPos().z) % SPBRevamped.finalMazeSize == 0) {
+        } else if (((float)chunk.getPos().x) % SPBRevamped.FINAL_MAZE_SIZE == 0 && ((float)chunk.getPos().z) % SPBRevamped.FINAL_MAZE_SIZE == 0) {
 
             if(!chunk.getPos().getBlockPos(0,20,0).isWithinDistance(new Vec3i(0,20,0), this.getExitSpawnRadius(world))){
                 int exit = random.nextBetween(0,4);

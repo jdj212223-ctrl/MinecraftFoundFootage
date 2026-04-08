@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 public class SPBRevamped implements ModInitializer {
 	public static final String MOD_ID = "spb-revamped";
     public static final Logger LOGGER = LoggerFactory.getLogger("spb-revamped");
-	public static final int finalMazeSize = 5;
+	public static final int FINAL_MAZE_SIZE = 5;
 
 	private static final UUID SLOW_SPEED_MODIFIER_ID = UUID.fromString("6a11099c-c3b8-4eba-9dad-f0c0bb997d35");
 	public static final EntityAttributeModifier SLOW_SPEED_MODIFIER = new EntityAttributeModifier(SLOW_SPEED_MODIFIER_ID, "SPBRevamped slow walk speed", -0.2f, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);

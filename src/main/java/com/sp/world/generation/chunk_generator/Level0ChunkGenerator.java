@@ -96,7 +96,7 @@ public class Level0ChunkGenerator extends BackroomsChunkGenerator {
                             mutable.set(x, 18, z),
                             structurePlacementData, random, 2);
                 }
-            } else if (((float) chunk.getPos().x) % SPBRevamped.finalMazeSize == 0 && ((float) chunk.getPos().z) % SPBRevamped.finalMazeSize == 0) {
+            } else if (((float) chunk.getPos().x) % SPBRevamped.FINAL_MAZE_SIZE == 0 && ((float) chunk.getPos().z) % SPBRevamped.FINAL_MAZE_SIZE == 0) {
 
 
                 if(!chunk.getPos().getBlockPos(0,20,0).isWithinDistance(new Vec3i(0,20,0), this.getExitSpawnRadius(world))) {

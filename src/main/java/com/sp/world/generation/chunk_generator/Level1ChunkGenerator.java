@@ -46,26 +46,20 @@ public final class Level1ChunkGenerator extends BackroomsChunkGenerator {
     public void generate(StructureWorldAccess world, Chunk chunk) {
         int x = chunk.getPos().getStartX();
         int z = chunk.getPos().getStartZ();
-        int lights = random.nextBetween(1,6);
-        int exit;
 
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         MinecraftServer server = world.getServer();
 
         StructureTemplateManager structureTemplateManager = world.getServer().getStructureTemplateManager();
-        Optional<StructureTemplate> optional;
-
-        Identifier roomIdentifier;
         StructurePlacementData structurePlacementData = new StructurePlacementData();
 
-
-        if ((float) chunk.getPos().x == 0 && (float) chunk.getPos().z  == 0) {
-            roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/stairwell_1");
+        if (isStartChunk(chunk)) {
+            Identifier roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/stairwell_1");
             structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
-            optional = structureTemplateManager.getTemplate(roomIdentifier);
+            Optional<StructureTemplate> stairwellStructureIn = structureTemplateManager.getTemplate(roomIdentifier);
 
-            if(optional.isPresent()){
-                optional.get().place(
+            if (stairwellStructureIn.isPresent()) {
+                stairwellStructureIn.get().place(
                         world,
                         mutable.set(-1,19,-1),
                         mutable.set(-1,19,-1),
@@ -75,93 +69,107 @@ public final class Level1ChunkGenerator extends BackroomsChunkGenerator {
 
             Level1MazeGenerator level1MazeGenerator = new Level1MazeGenerator(8, 10, 10, x, z, "level1");
             level1MazeGenerator.setup(world, false, false, false);
-        } else if (((float)chunk.getPos().x) % SPBRevamped.finalMazeSize == 0 && ((float)chunk.getPos().z) % SPBRevamped.finalMazeSize == 0) {
-            double noise1 = noiseSampler.sample((x) * 0.002, 0, (z) * 0.002);
-            if (server != null) {
+            return;
+        }
 
-                if(!chunk.getPos().getBlockPos(0,20,0).isWithinDistance(new Vec3i(0,20,0), this.getExitSpawnRadius(world))){
-                    if(noise1 <= 0){
-                        exit = random.nextBetween(1,1);
-                        if(exit == 1){
+        if (!isOnMazeGrid(chunk)) {
+            return;
+        }
 
-                            roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/stairwell2_1");
-                            structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
-                            optional = structureTemplateManager.getTemplate(roomIdentifier);
+        double noise1 = noiseSampler.sample((x) * 0.002, 0, (z) * 0.002);
+        if (server == null) {
+            return;
+        }
 
-                            if (optional.isPresent()) {
-                                optional.get().place(
-                                        world,
-                                        mutable.set(x + 16,11,z + 16),
-                                        mutable.set(x + 16,11,z + 16),
-                                        structurePlacementData, random, 2
-                                );
-                            }
+        if (!chunk.getPos().getBlockPos(0, 20, 0).isWithinDistance(new Vec3i(0, 20, 0), this.getExitSpawnRadius(world))) {
+            if (noise1 <= 0) {
+                boolean exitToLevel1 = random.nextBoolean();
 
-                        }
-                    }
-                }
-
-                if (noise1 > 0) {
-                    roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/megaroom1");
+                if (exitToLevel1) {
+                    Identifier roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/stairwell2_1");
                     structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
-                    optional = structureTemplateManager.getTemplate(roomIdentifier);
+                    Optional<StructureTemplate> stairwellStructureOutTo2 = structureTemplateManager.getTemplate(roomIdentifier);
 
-                    if (optional.isPresent()) {
-                        optional.get().place(
+                    if (stairwellStructureOutTo2.isPresent()) {
+                        stairwellStructureOutTo2.get().place(
                                 world,
-                                mutable.set(x - 32, 19, z - 32),
-                                mutable.set(x - 32, 19, z - 32),
-                                structurePlacementData, random, 2);
-                        optional.get().place(
-                                world,
-                                mutable.set(x, 19, z - 32),
-                                mutable.set(x, 19, z - 32),
-                                structurePlacementData, random, 2);
-
-                        roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/light" + lights);
-                        structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
-                        optional = structureTemplateManager.getTemplate(roomIdentifier);
-
-                        if (optional.isPresent()){
-                        optional.get().place(
-                                world,
-                                mutable.set(x - 32, 19, z - 32),
-                                mutable.set(x - 32, 19, z - 32),
-                                structurePlacementData, random, 16);
-                        optional.get().place(
-                                world,
-                                mutable.set(x, 19, z - 32),
-                                mutable.set(x, 19, z - 32),
-                                structurePlacementData, random, 16);
-                        }
-
-
-                    } else {
-                        if (world.getBlockState(mutable.set(x, 19, z)) != Blocks.RED_WOOL.getDefaultState()) {
-                            Level1MazeGenerator level1MazeGenerator = new Level1MazeGenerator(8, 10, 10, x, z, "level1");
-                            level1MazeGenerator.setup(world, false, false,true);
-                        }
-
+                                mutable.set(x + 16, 11, z + 16),
+                                mutable.set(x + 16, 11, z + 16),
+                                structurePlacementData, random, 2
+                        );
                     }
+                } else {
+                    Identifier roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/stairwell324_1");
+                    Optional<StructureTemplate> stairwellStructureOutTo324 = structureTemplateManager.getTemplate(roomIdentifier);
 
-                } else{
-
-                    if (world.getBlockState(mutable.set(x, 19, z)) != Blocks.RED_WOOL.getDefaultState()) {
-                        Level1MazeGenerator level1MazeGenerator = new Level1MazeGenerator(8, 10, 10, x, z, "level1");
-                        level1MazeGenerator.setup(world, false, false,true);
+                    if (stairwellStructureOutTo324.isPresent()) {
+                        stairwellStructureOutTo324.get().place(
+                                world,
+                                mutable.set(x + 16, 20, z + 16),
+                                mutable.set(x + 16, 20, z + 16),
+                                structurePlacementData, random, 2
+                        );
                     }
-
                 }
             }
         }
 
-        //Removes the ceiling for debugging
-//        for(int i = 0; i < 16; i++){
-//            for(int j = 0; j < 16; j++) {
-//                world.setBlockState(mutable.set(x + i, 25, z + j), Blocks.AIR.getDefaultState(), 2);
-//            }
-//        }
+        if (noise1 > 0) {
+            Identifier roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/megaroom1");
+            structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
+            Optional<StructureTemplate> megaRoom = structureTemplateManager.getTemplate(roomIdentifier);
 
+            if (megaRoom.isPresent()) {
+                megaRoom.get().place(
+                        world,
+                        mutable.set(x - 32, 19, z - 32),
+                        mutable.set(x - 32, 19, z - 32),
+                        structurePlacementData, random, 2);
+                megaRoom.get().place(
+                        world,
+                        mutable.set(x, 19, z - 32),
+                        mutable.set(x, 19, z - 32),
+                        structurePlacementData, random, 2);
+
+                Identifier lightRoomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/light" + random.nextBetween(1,6));
+                structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
+
+                Optional<StructureTemplate> lightStructure = structureTemplateManager.getTemplate(lightRoomIdentifier);
+
+                if (lightStructure.isPresent()) {
+                    lightStructure.get().place(
+                            world,
+                            mutable.set(x - 32, 19, z - 32),
+                            mutable.set(x - 32, 19, z - 32),
+                            structurePlacementData, random, 16);
+                    lightStructure.get().place(
+                            world,
+                            mutable.set(x, 19, z - 32),
+                            mutable.set(x, 19, z - 32),
+                            structurePlacementData, random, 16);
+                }
+            } else {
+                if (world.getBlockState(mutable.set(x, 19, z)) != Blocks.RED_WOOL.getDefaultState()) {
+                    Level1MazeGenerator level1MazeGenerator = new Level1MazeGenerator(8, 10, 10, x, z, "level1");
+                    level1MazeGenerator.setup(world, false, false, true);
+                }
+            }
+
+            return;
+        }
+
+        if (world.getBlockState(mutable.set(x, 19, z)) != Blocks.RED_WOOL.getDefaultState()) {
+            Level1MazeGenerator level1MazeGenerator = new Level1MazeGenerator(8, 10, 10, x, z, "level1");
+            level1MazeGenerator.setup(world, false, false, true);
+        }
+    }
+
+    private static boolean isStartChunk(Chunk chunk) {
+        return (float) chunk.getPos().x == 0 && (float) chunk.getPos().z == 0;
+    }
+
+    private static boolean isOnMazeGrid(Chunk chunk) {
+        return ((float) chunk.getPos().x) % SPBRevamped.FINAL_MAZE_SIZE == 0 && ((float) chunk.getPos().z) % SPBRevamped.FINAL_MAZE_SIZE == 0;
     }
 
     protected Codec<? extends ChunkGenerator> getCodec() {
