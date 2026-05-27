@@ -3,7 +3,7 @@
 	"id": "spb-revamped",
 	"version": "${version}",
 	"name": "SP-Backrooms Revamped",
-	"description": "Spacepotato's Found Footage Mod",
+	"description": "Spacepotato's Found Footage Mod - Now with Sodium & Iris Shader Support",
 	"authors": [
 		"SpacePotato",
 		"Herr Chaos",
@@ -45,7 +45,8 @@
 		"modmenu": {
 			"links": {
 				"My Youtube": "https://www.youtube.com/@SpacePotatoee",
-				"Join the Discord!": "https://discord.gg/z3sfGTdjEn"
+				"Join the Discord!": "https://discord.gg/z3sfGTdjEn",
+				"Cursed Fog Shader": "https://modrinth.com/shaders/cursed-fog"
 			},
 			"update_checker": false
 		}
@@ -61,19 +62,17 @@
 		"fabric-api": "*",
 		"fabric-key-binding-api-v1": "*",
 		"voicechat": ">=1.20.1-2.4.32",
-		"geckolib": ">=4.4.9"
+		"geckolib": ">=4.4.9",
+		"sodium": ">=0.5.0",
+		"iris": ">=1.6.0"
 	},
 	"suggests": {
-		"mod-menu": "*"
+		"mod-menu": "*",
+		"cursed-fog": "*"
 	},
 	"breaks": {
-		"sodium": "*",
 		"create": "*",
-		"iris": "*",
 		"optifine": "*",
-		"lithium": "*",
-		"phosphor": "*",
-		"indium": "*",
 		"modern_industrialization": "*"
 	}
 }
