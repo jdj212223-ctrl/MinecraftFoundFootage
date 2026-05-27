@@ -19,12 +19,6 @@ base {
 //}
 
 repositories {
-	//Veil
-	maven {
-		name = 'BlameJared Maven (CrT / Bookshelf)'
-		url = 'https://maven.blamejared.com'
-	}
-
 	//CCA
 	maven {
 		name = "Ladysnake Mods"
@@ -78,14 +72,6 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	//Veil
-	modImplementation("foundry.veil:Veil-fabric-${project.minecraft_version}:${project.veil_version}") {
-		transitive = false
-	}
-	include ("foundry.veil:Veil-fabric-${project.minecraft_version}:${project.veil_version}") {
-		transitive = false
-	}
 
 	//Cardinal Components API
 	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
